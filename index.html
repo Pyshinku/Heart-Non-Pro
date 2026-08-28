@@ -1,0 +1,1772 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Heart Non Pro - простое и красивое приложение для вашего цифрового пространства."
+    />
+    <title>Heart Non Pro</title>
+    <link rel="icon" href="heart.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Unbounded:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --accent: #fa3341;
+        --accent-rgb: 250, 51, 65;
+        --background: linear-gradient(135deg, #ffffff 0%, #f8f8f9 52%, #ffe8e9 100%);
+        --surface: rgba(255, 255, 255, 0.72);
+        --surface-strong: #ffffff;
+        --text: #17171a;
+        --muted-text: #77777f;
+        --border: rgba(25, 25, 29, 0.1);
+        --shadow: 0 24px 70px rgba(32, 20, 22, 0.1);
+        --header-bg: rgba(247, 247, 248, 0.72);
+      }
+
+      [data-resolved-theme="dark"] {
+        --background: radial-gradient(circle at 90% 0%, rgba(var(--accent-rgb), 0.16), transparent 36%), #111113;
+        --surface: rgba(28, 28, 31, 0.72);
+        --surface-strong: #1d1d20;
+        --text: #f8f8f8;
+        --muted-text: #a4a4aa;
+        --border: rgba(255, 255, 255, 0.12);
+        --shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+        --header-bg: rgba(17, 17, 19, 0.72);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        min-width: 320px;
+        scroll-behavior: smooth;
+      }
+
+      body {
+        min-height: 100vh;
+        margin: 0;
+        overflow-x: hidden;
+        background: var(--background);
+        color: var(--text);
+        font-family: "Unbounded", Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        transition: background-color 300ms ease, color 300ms ease;
+      }
+
+      button,
+      a,
+      input {
+        font: inherit;
+      }
+
+      button {
+        border: 0;
+        cursor: pointer;
+      }
+
+      .ambient {
+        position: fixed;
+        z-index: -1;
+        width: 48vw;
+        max-width: 710px;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        pointer-events: none;
+        filter: blur(76px);
+        opacity: 0.2;
+        background: rgb(var(--accent-rgb));
+        transition: background-color 250ms ease;
+      }
+
+      .ambient--one {
+        top: -25vw;
+        left: -15vw;
+      }
+
+      .ambient--two {
+        right: -18vw;
+        bottom: -30vw;
+        opacity: 0.13;
+      }
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        border-bottom: 1px solid transparent;
+        background: var(--header-bg);
+        backdrop-filter: blur(18px);
+        transition: border-color 300ms ease, background-color 300ms ease;
+      }
+
+      .site-header.is-scrolled {
+        border-color: var(--border);
+      }
+
+      .header-inner {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 52px;
+        width: min(100% - 48px, 1120px);
+        min-height: 84px;
+        margin: 0 auto;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        flex: 0 0 auto;
+        color: var(--text);
+        text-decoration: none;
+      }
+
+      .brand-mark {
+        display: grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 11px;
+        overflow: hidden;
+        background: #161619;
+        box-shadow: 0 7px 18px rgba(var(--accent-rgb), 0.25);
+      }
+
+      .brand-mark svg {
+        display: block;
+        width: 29px;
+        height: 29px;
+      }
+
+      .brand-name {
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: -0.055em;
+        white-space: nowrap;
+      }
+
+      .nav-tabs {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: var(--surface);
+      }
+
+      .nav-tab {
+        padding: 10px 14px;
+        border-radius: 9px;
+        background: transparent;
+        color: var(--muted-text);
+        font-size: 10px;
+        font-weight: 500;
+        transition: color 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+      }
+
+      .nav-tab:hover {
+        color: var(--text);
+      }
+
+      .nav-tab.is-active {
+        background: var(--surface-strong);
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        color: var(--text);
+      }
+
+      main {
+        width: min(100% - 48px, 1120px);
+        margin: 0 auto;
+      }
+
+      .page {
+        display: none;
+        min-height: calc(100vh - 84px);
+        animation: enter 350ms ease both;
+      }
+
+      .page.is-active {
+        display: flex;
+      }
+
+      .home-page {
+        flex-direction: column;
+        justify-content: center;
+        padding: 72px 0 54px;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(350px, 0.92fr);
+        align-items: center;
+        gap: 52px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        margin: 0 0 22px;
+        color: var(--muted-text);
+        font-family: "DM Mono", monospace;
+        font-size: 11px;
+        line-height: 1.5;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 0 5px rgba(var(--accent-rgb), 0.14);
+      }
+
+      h1 {
+        max-width: 660px;
+        margin: 0;
+        font-size: clamp(39px, 5vw, 69px);
+        font-weight: 600;
+        line-height: 1.1;
+        letter-spacing: -0.08em;
+      }
+
+      .hero-title-accent {
+        color: var(--accent);
+        transition: color 250ms ease;
+      }
+
+      .hero-copy {
+        max-width: 540px;
+        margin: 25px 0 32px;
+        color: var(--muted-text);
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 1.85;
+        letter-spacing: -0.035em;
+      }
+
+      .download-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        min-height: 60px;
+        padding: 17px 23px;
+        border-radius: 16px;
+        background: var(--accent);
+        box-shadow: 0 16px 30px rgba(var(--accent-rgb), 0.27);
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: -0.04em;
+        text-decoration: none;
+        transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+      }
+
+      .download-button:hover {
+        box-shadow: 0 19px 34px rgba(var(--accent-rgb), 0.35);
+        filter: brightness(1.04);
+        transform: translateY(-3px);
+      }
+
+      .download-button:active {
+        transform: translateY(0);
+      }
+
+      .download-button svg {
+        width: 16px;
+        height: 16px;
+      }
+
+      .download-meta {
+        display: block;
+        margin: 14px 0 0;
+        color: var(--muted-text);
+        font-family: "DM Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.01em;
+      }
+
+      .app-card {
+        position: relative;
+        min-height: 388px;
+        padding: 30px;
+        border: 1px solid var(--border);
+        border-radius: 30px;
+        overflow: hidden;
+        background: var(--surface);
+        box-shadow: var(--shadow);
+        isolation: isolate;
+      }
+
+      .app-card::before {
+        position: absolute;
+        z-index: -1;
+        top: -54%;
+        right: -36%;
+        width: 100%;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: rgba(var(--accent-rgb), 0.24);
+        content: "";
+        filter: blur(26px);
+        transition: background-color 250ms ease;
+      }
+
+      .card-topline {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .card-label,
+      .version-label {
+        color: var(--muted-text);
+        font-family: "DM Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.03em;
+      }
+
+      .window-dots {
+        display: flex;
+        gap: 6px;
+      }
+
+      .window-dots span {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--border);
+      }
+
+      .window-dots span:last-child {
+        background: var(--accent);
+      }
+
+      .heart-stage {
+        display: grid;
+        place-items: center;
+        min-height: 230px;
+        margin: 8px 0 9px;
+      }
+
+      .hero-heart {
+        width: min(232px, 80%);
+        filter: drop-shadow(0 21px 22px rgba(var(--accent-rgb), 0.28));
+        transform: rotate(-4deg);
+        transition: filter 250ms ease, transform 250ms ease;
+      }
+
+      .app-card:hover .hero-heart {
+        transform: rotate(0deg) translateY(-6px);
+      }
+
+      .card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        padding-top: 19px;
+        border-top: 1px solid var(--border);
+      }
+
+      .card-footer strong {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: -0.055em;
+      }
+
+      .card-footer p {
+        margin: 0;
+        color: var(--muted-text);
+        font-family: "DM Mono", monospace;
+        font-size: 10px;
+      }
+
+      .os-pill {
+        padding: 9px 10px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        color: var(--muted-text);
+        font-family: "DM Mono", monospace;
+        font-size: 9px;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-top: 64px;
+      }
+
+      .stat-card {
+        padding: 23px 24px;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        background: var(--surface);
+        transition: transform 180ms ease, border-color 180ms ease;
+      }
+
+      .stat-card:hover {
+        border-color: rgba(var(--accent-rgb), 0.34);
+        transform: translateY(-4px);
+      }
+
+      .stat-number {
+        display: block;
+        font-size: clamp(22px, 2.6vw, 31px);
+        font-weight: 600;
+        letter-spacing: -0.09em;
+      }
+
+      .stat-label {
+        display: block;
+        margin-top: 8px;
+        color: var(--muted-text);
+        font-family: "DM Mono", monospace;
+        font-size: 10px;
+        line-height: 1.5;
+      }
+
+      .settings-page {
+        align-items: center;
+        justify-content: center;
+        padding: 54px 0;
+      }
+
+      .settings-panel {
+        width: min(100%, 720px);
+        padding: clamp(26px, 5vw, 45px);
+        border: 1px solid var(--border);
+        border-radius: 30px;
+        background: var(--surface);
+        box-shadow: var(--shadow);
+      }
+
+      .settings-kicker {
+        margin: 0 0 15px;
+        color: var(--accent);
+        font-family: "DM Mono", monospace;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .settings-title {
+        margin: 0;
+        font-size: clamp(28px, 4vw, 42px);
+        font-weight: 600;
+        letter-spacing: -0.08em;
+      }
+
+      .settings-copy {
+        max-width: 510px;
+        margin: 16px 0 39px;
+        color: var(--muted-text);
+        font-size: 12px;
+        line-height: 1.8;
+        letter-spacing: -0.035em;
+      }
+
+      .setting-group + .setting-group {
+        margin-top: 36px;
+        padding-top: 34px;
+        border-top: 1px solid var(--border);
+      }
+
+      .setting-heading {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        align-items: baseline;
+        margin-bottom: 19px;
+      }
+
+      .setting-heading h3 {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: -0.06em;
+      }
+
+      .setting-heading p {
+        margin: 0;
+        color: var(--muted-text);
+        font-family: "DM Mono", monospace;
+        font-size: 10px;
+        text-align: right;
+      }
+
+      .accent-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .accent-choice,
+      .color-picker-label {
+        position: relative;
+        display: grid;
+        place-items: center;
+        width: 47px;
+        height: 47px;
+        padding: 0;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: var(--surface-strong);
+        transition: transform 180ms ease, border-color 180ms ease;
+      }
+
+      .accent-choice::after {
+        width: 31px;
+        height: 31px;
+        border-radius: 10px;
+        background: var(--choice);
+        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.36);
+        content: "";
+      }
+
+      .accent-choice:hover,
+      .color-picker-label:hover {
+        transform: translateY(-3px);
+      }
+
+      .accent-choice.is-selected {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.14);
+      }
+
+      .color-picker-label {
+        color: var(--muted-text);
+      }
+
+      .color-picker-label:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      .color-picker-label svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      #custom-accent {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .theme-options {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+
+      .theme-choice {
+        min-height: 72px;
+        padding: 13px 10px;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: var(--surface-strong);
+        color: var(--muted-text);
+        font-family: "Unbounded", Arial, sans-serif;
+        font-weight: bold;
+        font-size: 16px;
+        line-height: 1.4;
+        transition: border-color 180ms ease, color 180ms ease, background-color 180ms ease, transform 180ms ease;
+      }
+
+      .theme-choice:hover {
+        color: var(--text);
+        transform: translateY(-2px);
+      }
+
+      .theme-choice.is-selected {
+        border-color: var(--accent);
+        background: rgba(var(--accent-rgb), 0.09);
+        color: var(--text);
+      }
+
+      .p {
+        font-family: "Unbounded", Arial, sans-serif;
+        font-size: 16px;
+      }
+
+      .login-link {
+        color: var(--muted-text);
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: -0.04em;
+        text-decoration: none;
+        transition: color 180ms ease;
+      }
+
+      .login-link:hover {
+        color: var(--accent);
+      }
+
+      .login-page {
+        align-items: center;
+        justify-content: center;
+        padding: 54px 0;
+      }
+
+      .login-panel {
+        width: min(100%, 470px);
+        padding: clamp(26px, 5vw, 42px);
+        border: 1px solid var(--border);
+        border-radius: 30px;
+        background: var(--surface);
+        box-shadow: var(--shadow);
+      }
+
+      .login-kicker,
+      .account-kicker {
+        margin: 0 0 13px;
+        color: var(--accent);
+        font-family: "DM Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+      }
+
+      .login-title {
+        margin: 0;
+        font-size: clamp(28px, 4vw, 40px);
+        font-weight: 600;
+        letter-spacing: -0.08em;
+      }
+
+      .login-copy {
+        margin: 15px 0 29px;
+        color: var(--muted-text);
+        font-size: 11px;
+        line-height: 1.75;
+        letter-spacing: -0.035em;
+      }
+
+      .account-form {
+        display: grid;
+        gap: 13px;
+      }
+
+      .field-label {
+        display: grid;
+        gap: 8px;
+        color: var(--text);
+        font-family: "DM Mono", monospace;
+        font-size: 10px;
+      }
+
+      .text-field {
+        width: 100%;
+        min-height: 49px;
+        padding: 13px 15px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        outline: none;
+        background: var(--surface-strong);
+        color: var(--text);
+        font-family: "DM Mono", monospace;
+        font-size: 12px;
+        transition: border-color 180ms ease, box-shadow 180ms ease;
+      }
+
+      .text-field:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.13);
+      }
+
+      .remember-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        margin: 19px 0 22px;
+        color: var(--muted-text);
+        font-family: "DM Mono", monospace;
+        font-size: 10px;
+        cursor: pointer;
+      }
+
+      .remember-label input {
+        width: 15px;
+        height: 15px;
+        margin: 0;
+        accent-color: var(--accent);
+      }
+
+      .form-button,
+      .account-button {
+        min-height: 47px;
+        padding: 12px 16px;
+        border-radius: 12px;
+        background: var(--accent);
+        box-shadow: 0 10px 22px rgba(var(--accent-rgb), 0.21);
+        color: #fff;
+        font-family: "DM Mono", monospace;
+        font-size: 10px;
+        transition: filter 180ms ease, transform 180ms ease, opacity 180ms ease;
+      }
+
+      .form-button:hover,
+      .account-button:hover {
+        filter: brightness(1.04);
+        transform: translateY(-2px);
+      }
+
+      .form-button:disabled,
+      .account-button:disabled {
+        cursor: not-allowed;
+        opacity: 0.62;
+        transform: none;
+      }
+
+      .form-feedback {
+        min-height: 18px;
+        margin: 14px 0 0;
+        color: var(--muted-text);
+        font-family: "DM Mono", monospace;
+        font-size: 10px;
+        line-height: 1.5;
+      }
+
+      .form-feedback.is-error {
+        color: var(--accent);
+      }
+
+      .form-feedback.is-success {
+        color: #159164;
+      }
+
+      .account-panel {
+        margin-bottom: 35px;
+        padding-bottom: 34px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .account-overview {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+      }
+
+      .avatar-editor {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .profile-avatar {
+        display: grid;
+        place-items: center;
+        width: 62px;
+        height: 62px;
+        border: 1px solid rgba(var(--accent-rgb), 0.35);
+        border-radius: 19px;
+        overflow: hidden;
+        background: rgba(var(--accent-rgb), 0.12);
+        color: var(--accent);
+        font-size: 17px;
+        font-weight: 600;
+        letter-spacing: -0.08em;
+      }
+
+      .profile-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .avatar-upload-label {
+        display: inline-flex;
+        align-items: center;
+        min-height: 34px;
+        padding: 8px 10px;
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        color: var(--muted-text);
+        font-family: "DM Mono", monospace;
+        font-size: 9px;
+        cursor: pointer;
+        transition: border-color 180ms ease, color 180ms ease;
+      }
+
+      .avatar-upload-label:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      .avatar-upload-label input {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .account-identity {
+        min-width: 0;
+        text-align: right;
+      }
+
+      .account-name {
+        display: block;
+        overflow: hidden;
+        color: var(--text);
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: -0.07em;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .account-hint {
+        display: block;
+        margin-top: 6px;
+        color: var(--muted-text);
+        font-family: "DM Mono", monospace;
+        font-size: 9px;
+      }
+
+      .account-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+        margin-top: 29px;
+      }
+
+      .account-form-title {
+        margin: 0 0 14px;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: -0.06em;
+      }
+
+      .account-form .account-button {
+        justify-self: start;
+        margin-top: 3px;
+      }
+
+      .account-text-action {
+        margin-top: 12px;
+        padding: 0;
+        background: transparent;
+        color: var(--muted-text);
+        font-family: "DM Mono", monospace;
+        font-size: 9px;
+        transition: color 180ms ease;
+      }
+
+      .account-text-action:hover {
+        color: var(--accent);
+      }
+
+      .account-sessions {
+        margin-bottom: 0;
+      }
+
+      .session-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .session-card {
+        display: grid;
+        grid-template-columns: minmax(115px, 0.7fr) 1fr 1fr;
+        gap: 16px;
+        align-items: center;
+        padding: 16px;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: var(--surface-strong);
+      }
+
+      .session-device {
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: -0.055em;
+      }
+
+      .session-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 7px;
+        color: #159164;
+        font-family: "DM Mono", monospace;
+        font-size: 9px;
+      }
+
+      .session-status::before {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+        content: "";
+      }
+
+      .session-detail {
+        color: var(--muted-text);
+        font-family: "DM Mono", monospace;
+        font-size: 9px;
+        line-height: 1.55;
+      }
+
+      .session-detail strong {
+        display: block;
+        margin-bottom: 3px;
+        color: var(--text);
+        font-size: 9px;
+        font-weight: 500;
+      }
+
+      @keyframes enter {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 760px) {
+        .header-inner {
+          gap: 18px;
+          width: min(100% - 28px, 1120px);
+          min-height: 74px;
+        }
+
+        main {
+          width: min(100% - 32px, 1120px);
+        }
+
+        .brand-name {
+          font-size: 11px;
+        }
+
+        .nav-tab {
+          padding: 9px 10px;
+          font-size: 9px;
+        }
+
+        .home-page {
+          padding: 52px 0 38px;
+        }
+
+        .hero {
+          grid-template-columns: 1fr;
+          gap: 44px;
+          text-align: center;
+        }
+
+        .eyebrow {
+          justify-content: center;
+        }
+
+        .hero-copy {
+          margin-right: auto;
+          margin-left: auto;
+          font-size: 12px;
+        }
+
+        .app-card {
+          min-height: 350px;
+        }
+
+        .stats {
+          grid-template-columns: 1fr;
+          gap: 9px;
+          margin-top: 42px;
+        }
+
+        .stat-card {
+          display: flex;
+          align-items: baseline;
+          justify-content: space-between;
+          padding: 19px;
+          text-align: left;
+        }
+
+        .stat-label {
+          margin: 0;
+          text-align: right;
+        }
+
+        .settings-page {
+          padding: 36px 0;
+        }
+
+        .setting-heading {
+          align-items: flex-start;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .setting-heading p {
+          text-align: left;
+        }
+
+        .login-page {
+          padding: 36px 0;
+        }
+
+        .account-overview {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .account-identity {
+          text-align: left;
+        }
+
+        .account-actions {
+          grid-template-columns: 1fr;
+          gap: 28px;
+        }
+
+        .session-card {
+          grid-template-columns: 1fr;
+          gap: 10px;
+        }
+      }
+
+      @media (max-width: 390px) {
+        .header-inner {
+          justify-content: space-between;
+          gap: 8px;
+        }
+
+        .brand-mark {
+          width: 30px;
+          height: 30px;
+        }
+
+        .brand-name {
+          display: none;
+        }
+
+        .nav-tab {
+          padding-right: 9px;
+          padding-left: 9px;
+        }
+
+        .theme-options {
+          gap: 7px;
+        }
+
+        .theme-choice {
+          padding-right: 5px;
+          padding-left: 5px;
+          font-size: 9px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          transition-duration: 0.01ms !important;
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+        }
+      }
+    </style>
+  </head>
+  <body data-resolved-theme="light" data-api-base="http://127.0.0.1:8000">
+    <div class="ambient ambient--one" aria-hidden="true"></div>
+    <div class="ambient ambient--two" aria-hidden="true"></div>
+
+    <header class="site-header" id="site-header">
+      <div class="header-inner">
+        <a class="brand" href="#home" aria-label="Heart Non Pro, главная">
+          <span class="brand-mark" aria-hidden="true" style="background: transparent !important; background-color: transparent !important; border-radius: 0 !important; box-shadow: none !important;">
+  <svg viewBox="0 0 64 64" xmlns="http://w3.org" style="background: transparent !important; background-color: transparent !important;">
+    <image href="heart.png" x="0" y="0" width="64" height="64" />
+  </svg>
+</span>
+          <span class="brand-name">Heart Non Pro</span>
+        </a>
+
+        <nav class="nav-tabs" aria-label="Навигация по сайту">
+          <button class="nav-tab is-active" type="button" data-page-target="home">Главная</button>
+          <button class="nav-tab" type="button" data-page-target="settings">Настройки</button>
+        </nav>
+        <a class="login-link" id="auth-nav-link" href="#login">Вход</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="page home-page is-active" id="home" aria-labelledby="home-title">
+        <div class="hero">
+          <div class="hero-content">
+            <p class="eyebrow"><span class="status-dot"></span> Версия 7.4 уже доступна</p>
+            <h1 id="home-title">Взломщик <span class="hero-title-accent">уже в твоём кармане.</span></h1>
+            <p class="hero-copy">
+              Heart Non Pro это самый лучший взломщик из всех возможных, который с каждым обновление усовершенствуется.
+            </p>
+            <!-- Replace this relative path with the published installer URL before deployment. -->
+            <a class="download-button" href="./HeartNonProInstaller.exe" download data-installer-link>
+              Скачать на Компьютер
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 3v11m0 0 4-4m-4 4-4-4M5 21h14" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </a>
+            <span class="download-meta">Windows 10/11 · 64-bit · 65.3 MB</span>
+          </div>
+
+          <aside class="app-card" aria-label="Карточка приложения Heart Non Pro">
+            <div class="card-topline">
+              <span class="card-label">HEART / HOME</span>
+              <span class="window-dots" aria-hidden="true"><span></span><span></span><span></span></span>
+            </div>
+            <div class="heart-stage" aria-hidden="true">
+            <svg class="hero-heart" viewBox="0 0 300 275" xmlns="http://www.w3.org/2000/svg">
+            <image href="heart.png" x="0" y="0" width="300" height="275" />
+              </svg>
+              </div>
+            <div class="card-footer">
+              <div>
+                <strong>Heart Non Pro</strong>
+                <p>Удобно, Стильно, Красиво.</p>
+              </div>
+              <span class="os-pill">WIN / x64</span>
+            </div>
+          </aside>
+        </div>
+
+        <div class="stats" aria-label="Статистика приложения">
+          <article class="stat-card">
+            <strong class="stat-number" data-count="12840" data-format="compact">109</strong>
+            <span class="stat-label">загрузок приложения</span>
+          </article>
+          <article class="stat-card">
+            <strong class="stat-number" data-count="86">4</strong>
+            <span class="stat-label">пользователей на сайте</span>
+          </article>
+          <article class="stat-card">
+            <strong class="stat-number" data-count="49" data-format="rating">4 . 2 / 5</strong>
+            <span class="stat-label">оценка пользователей</span>
+          </article>
+        </div>
+      </section>
+
+      <section class="page login-page" id="login" aria-labelledby="login-title" hidden>
+        <div class="login-panel">
+          <h2 class="login-title" id="login-title">Вход</h2>
+          <p class="login-copy">Введите данные существующего аккаунта, чтобы продолжить.</p>
+
+          <form id="login-form" class="account-form" novalidate>
+            <label class="field-label" for="login-username">
+              Username
+              <input class="text-field" id="login-username" name="username" type="text" autocomplete="username" maxlength="64" required />
+            </label>
+            <label class="field-label" for="login-password">
+              Password
+              <input class="text-field" id="login-password" name="password" type="password" autocomplete="current-password" maxlength="256" required />
+            </label>
+            <label class="remember-label" for="remember-me">
+              <input id="remember-me" name="rememberMe" type="checkbox" />
+              Запомнить меня
+            </label>
+            <button class="form-button" id="login-submit" type="submit">Вход</button>
+          </form>
+          <p class="form-feedback" id="login-feedback" aria-live="polite" hidden></p>
+        </div>
+      </section>
+
+      <section class="page settings-page" id="settings" aria-labelledby="settings-title" hidden>
+        <div class="settings-panel">
+          <section class="account-panel" id="account-panel" aria-labelledby="account-heading" hidden>
+            <div class="account-overview">
+              <div class="avatar-editor">
+                <div class="profile-avatar" id="profile-avatar" aria-label="Аватар профиля">
+                  <span id="profile-avatar-fallback">HN</span>
+                  <img id="profile-avatar-image" alt="Аватар профиля" hidden />
+                </div>
+                <label class="avatar-upload-label" for="avatar-upload">
+                  Изменить фото
+                  <input id="avatar-upload" type="file" accept="image/jpeg,image/png,image/webp" />
+                </label>
+              </div>
+              <div class="account-identity">
+                <p class="account-kicker">Ваш аккаунт</p>
+                <strong class="account-name" id="account-heading">Пользователь</strong>
+                <span class="account-hint">Данные защищены серверной сессией</span>
+                <button class="account-text-action" id="logout-button" type="button">Выйти</button>
+              </div>
+            </div>
+
+            <div class="account-actions">
+              <form class="account-form" id="username-form" novalidate>
+                <h3 class="account-form-title">Изменить имя пользователя</h3>
+                <label class="field-label" for="account-username">
+                  Username
+                  <input class="text-field" id="account-username" name="username" type="text" autocomplete="username" maxlength="32" required />
+                </label>
+                <button class="account-button" id="username-submit" type="submit">Сохранить имя</button>
+              </form>
+
+              <form class="account-form" id="password-form" novalidate>
+                <h3 class="account-form-title">Изменить пароль</h3>
+                <label class="field-label" for="current-password">
+                  Текущий пароль
+                  <input class="text-field" id="current-password" name="currentPassword" type="password" autocomplete="current-password" maxlength="256" required />
+                </label>
+                <label class="field-label" for="new-password">
+                  Новый пароль
+                  <input class="text-field" id="new-password" name="newPassword" type="password" autocomplete="new-password" minlength="12" maxlength="256" required />
+                </label>
+                <label class="field-label" for="confirm-password">
+                  Повторите новый пароль
+                  <input class="text-field" id="confirm-password" name="confirmPassword" type="password" autocomplete="new-password" minlength="12" maxlength="256" required />
+                </label>
+                <button class="account-button" id="password-submit" type="submit">Обновить пароль</button>
+              </form>
+            </div>
+            <p class="form-feedback" id="account-feedback" aria-live="polite" hidden></p>
+          </section>
+
+          <p class="settings-kicker">Персонализация</p>
+          <h2 class="settings-title" id="settings-title">Настройки внешнего вида</h2>
+          <p class="settings-copy">
+            Выберите акцент и режим оформления. Ваши настройки сохраняются в браузере и
+            применяются к интерфейсу сразу.
+          </p>
+
+          <div class="setting-group">
+            <div class="setting-heading">
+              <h3>Акцентный цвет</h3>
+              <p id="accent-value">#FA3341</p>
+            </div>
+            <div class="accent-options" role="group" aria-label="Выбор акцентного цвета">
+              <button class="accent-choice is-selected" type="button" style="--choice: #fa3341" data-accent="#fa3341" aria-label="Красный акцент"></button>
+              <button class="accent-choice" type="button" style="--choice: #7357ff" data-accent="#7357ff" aria-label="Фиолетовый акцент"></button>
+              <button class="accent-choice" type="button" style="--choice: #017bfe" data-accent="#017bfe" aria-label="Синий акцент"></button>
+              <button class="accent-choice" type="button" style="--choice: #10a36d" data-accent="#10a36d" aria-label="Зелёный акцент"></button>
+              <label class="color-picker-label" title="Свой цвет" aria-label="Выбрать свой акцентный цвет">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                </svg>
+                <input id="custom-accent" type="color" value="#fa3341" aria-label="Свой акцентный цвет" />
+              </label>
+            </div>
+          </div>
+
+          <div class="setting-group">
+            <div class="setting-heading">
+              <h3>Тема</h3>
+              <p id="theme-description" style="font-size: 14px;">Как в системе</p>
+            </div>
+            <div class="theme-options" role="group" aria-label="Выбор темы">
+              <button class="theme-choice" type="button" data-theme="light">Светлая<br />тема</button>
+              <button class="theme-choice" type="button" data-theme="dark">Тёмная<br />тема</button>
+              <button class="theme-choice is-selected" type="button" data-theme="system">Своя<br />тема</button>
+            </div>
+          </div>
+
+          <section class="setting-group account-sessions" id="sessions-section" aria-labelledby="sessions-title" hidden>
+            <div class="setting-heading">
+              <h3 id="sessions-title">Сессии аккаунта</h3>
+              <p>Активность за последние 7 дней</p>
+            </div>
+            <div class="session-list" id="session-list"></div>
+          </section>
+
+        </div>
+      </section>
+    </main>
+
+    <script>
+      (function () {
+        var root = document.documentElement;
+        var body = document.body;
+        var storageKeys = {
+          accent: "heart-non-pro-accent",
+          theme: "heart-non-pro-theme"
+        };
+        var systemTheme = window.matchMedia("(prefers-color-scheme: dark)");
+        var savedAccent = localStorage.getItem(storageKeys.accent) || "#fa3341";
+        var savedTheme = localStorage.getItem(storageKeys.theme) || "system";
+        var apiBase = (body.dataset.apiBase || "").replace(/\/+$/, "");
+        var authentication = { user: null, csrfToken: "" };
+        var heartbeatTimer = null;
+        var heartbeatInterval = 3 * 60 * 1000;
+
+        function hexToRgb(hex) {
+          var value = hex.replace("#", "");
+          if (value.length === 3) {
+            value = value.split("").map(function (part) { return part + part; }).join("");
+          }
+          var number = parseInt(value, 16);
+          return ((number >> 16) & 255) + ", " + ((number >> 8) & 255) + ", " + (number & 255);
+        }
+
+        function applyAccent(color) {
+          root.style.setProperty("--accent", color);
+          root.style.setProperty("--accent-rgb", hexToRgb(color));
+          document.getElementById("accent-value").textContent = color.toUpperCase();
+          document.getElementById("custom-accent").value = color;
+
+          document.querySelectorAll(".accent-choice").forEach(function (button) {
+            button.classList.toggle("is-selected", button.dataset.accent.toLowerCase() === color.toLowerCase());
+          });
+        }
+
+        function applyTheme(theme) {
+          var resolvedTheme = theme === "system" ? (systemTheme.matches ? "dark" : "light") : theme;
+          body.dataset.resolvedTheme = resolvedTheme;
+          document.getElementById("theme-description").textContent = theme === "system" ? "Как в системе" : theme === "light" ? "Светлое оформление" : "Тёмное оформление";
+
+          document.querySelectorAll(".theme-choice").forEach(function (button) {
+            button.classList.toggle("is-selected", button.dataset.theme === theme);
+          });
+        }
+
+        function openPage(pageName) {
+          document.querySelectorAll(".page").forEach(function (page) {
+            var selected = page.id === pageName;
+            page.classList.toggle("is-active", selected);
+            page.hidden = !selected;
+          });
+
+          document.querySelectorAll(".nav-tab").forEach(function (button) {
+            button.classList.toggle("is-active", button.dataset.pageTarget === pageName);
+          });
+
+          window.history.replaceState(null, "", "#" + pageName);
+        }
+
+        function apiUrl(path) {
+          return apiBase + path;
+        }
+
+        function apiAssetUrl(path) {
+          if (!path) return "";
+          return /^https?:\/\//i.test(path) ? path : apiBase + path;
+        }
+
+        async function apiRequest(path, options) {
+          options = options || {};
+          var method = (options.method || "GET").toUpperCase();
+          var headers = new Headers(options.headers || {});
+          headers.set("Accept", "application/json");
+          if (options.json) {
+            headers.set("Content-Type", "application/json");
+          }
+          if (["POST", "PATCH", "PUT", "DELETE"].indexOf(method) !== -1 && authentication.csrfToken) {
+            headers.set("X-CSRF-Token", authentication.csrfToken);
+          }
+
+          var response = await window.fetch(apiUrl(path), {
+            method: method,
+            headers: headers,
+            body: options.json ? JSON.stringify(options.json) : options.body,
+            credentials: "include"
+          });
+          var payload = null;
+          var responseType = response.headers.get("content-type") || "";
+          if (responseType.indexOf("application/json") !== -1) {
+            payload = await response.json();
+          }
+          if (!response.ok) {
+            var message = payload && typeof payload.detail === "string" ? payload.detail : "Не удалось выполнить запрос. Попробуйте ещё раз.";
+            var error = new Error(message);
+            error.status = response.status;
+            throw error;
+          }
+          return payload;
+        }
+
+        function setFeedback(elementId, message, type) {
+          var feedback = document.getElementById(elementId);
+          feedback.textContent = message || "";
+          feedback.hidden = !message;
+          feedback.classList.toggle("is-error", type === "error");
+          feedback.classList.toggle("is-success", type === "success");
+        }
+
+        function setPending(button, pendingText, isPending) {
+          if (!button.dataset.defaultText) button.dataset.defaultText = button.textContent;
+          button.disabled = isPending;
+          button.textContent = isPending ? pendingText : button.dataset.defaultText;
+        }
+
+        function userInitials(username) {
+          return username.slice(0, 2).toUpperCase();
+        }
+
+        function renderAvatar(user) {
+          var image = document.getElementById("profile-avatar-image");
+          var fallback = document.getElementById("profile-avatar-fallback");
+          fallback.textContent = userInitials(user.username);
+          if (user.avatarUrl) {
+            image.src = apiAssetUrl(user.avatarUrl);
+            image.hidden = false;
+            fallback.hidden = true;
+          } else {
+            image.removeAttribute("src");
+            image.hidden = true;
+            fallback.hidden = false;
+          }
+        }
+
+        function stopHeartbeat() {
+          if (heartbeatTimer) {
+            window.clearInterval(heartbeatTimer);
+            heartbeatTimer = null;
+          }
+        }
+
+        async function sendHeartbeat() {
+          if (!authentication.user || document.hidden) return;
+          try {
+            await apiRequest("/api/auth/heartbeat", { method: "POST" });
+          } catch (error) {
+            if (error.status === 401) setAuthentication(null, "");
+          }
+        }
+
+        function startHeartbeat() {
+          stopHeartbeat();
+          heartbeatTimer = window.setInterval(sendHeartbeat, heartbeatInterval);
+        }
+
+        function setAuthentication(user, csrfToken) {
+          authentication.user = user;
+          authentication.csrfToken = csrfToken || "";
+
+          var signedIn = Boolean(user);
+          var loginLink = document.getElementById("auth-nav-link");
+          var accountPanel = document.getElementById("account-panel");
+          var sessionsSection = document.getElementById("sessions-section");
+          loginLink.textContent = signedIn ? user.username : "Вход";
+          loginLink.href = signedIn ? "#settings" : "#login";
+          accountPanel.hidden = !signedIn;
+          sessionsSection.hidden = !signedIn;
+
+          if (!signedIn) {
+            stopHeartbeat();
+            document.getElementById("session-list").replaceChildren();
+            return;
+          }
+
+          document.getElementById("account-heading").textContent = user.username;
+          document.getElementById("account-username").value = user.username;
+          renderAvatar(user);
+          startHeartbeat();
+          loadSessions();
+        }
+
+        function formatTimestamp(value) {
+          var date = new Date(value);
+          if (Number.isNaN(date.getTime())) return "Не определено";
+          return new Intl.DateTimeFormat("ru-RU", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+          }).format(date);
+        }
+
+        function createSessionDetail(label, value) {
+          var detail = document.createElement("div");
+          detail.className = "session-detail";
+          var heading = document.createElement("strong");
+          heading.textContent = label;
+          var text = document.createElement("span");
+          text.textContent = value || "Не определено";
+          detail.append(heading, text);
+          return detail;
+        }
+
+        function renderSessions(sessions) {
+          var list = document.getElementById("session-list");
+          list.replaceChildren();
+          sessions.forEach(function (session) {
+            var card = document.createElement("article");
+            card.className = "session-card";
+            var device = document.createElement("div");
+            var name = document.createElement("strong");
+            name.className = "session-device";
+            name.textContent = session.deviceName;
+            var sessionStatus = document.createElement("span");
+            sessionStatus.className = "session-status";
+            sessionStatus.textContent = session.isCurrent ? "Это устройство" : "Активна";
+            device.append(name, sessionStatus);
+
+            var location = createSessionDetail("Платформа и место", session.platform + " · " + (session.location || "Не определено"));
+            var activity = createSessionDetail("Вход", formatTimestamp(session.createdAt));
+            var lastSeen = document.createElement("span");
+            lastSeen.textContent = "Активность: " + formatTimestamp(session.lastSeenAt);
+            activity.append(lastSeen);
+            card.append(device, location, activity);
+            list.append(card);
+          });
+        }
+
+        async function loadSessions() {
+          if (!authentication.user) return;
+          try {
+            var response = await apiRequest("/api/account/sessions");
+            renderSessions(response.sessions || []);
+          } catch (error) {
+            if (error.status === 401) setAuthentication(null, "");
+          }
+        }
+
+        async function restoreAuthentication() {
+          try {
+            var response = await apiRequest("/api/auth/me");
+            setAuthentication(response.user, response.csrfToken);
+            if (window.location.hash === "#login") openPage("settings");
+          } catch (error) {
+            setAuthentication(null, "");
+          }
+        }
+
+        document.getElementById("auth-nav-link").addEventListener("click", function (event) {
+          event.preventDefault();
+          openPage(authentication.user ? "settings" : "login");
+        });
+
+        document.getElementById("profile-avatar-image").addEventListener("error", function () {
+          this.hidden = true;
+          document.getElementById("profile-avatar-fallback").hidden = false;
+        });
+
+        document.getElementById("login-form").addEventListener("submit", async function (event) {
+          event.preventDefault();
+          var username = document.getElementById("login-username").value.trim();
+          var password = document.getElementById("login-password").value;
+          var rememberMe = document.getElementById("remember-me").checked;
+          var button = document.getElementById("login-submit");
+          if (!username || !password) {
+            setFeedback("login-feedback", "Заполните имя пользователя и пароль.", "error");
+            return;
+          }
+
+          setFeedback("login-feedback", "", "");
+          setPending(button, "Вход...", true);
+          try {
+            var response = await apiRequest("/api/auth/login", {
+              method: "POST",
+              json: { username: username, password: password, remember_me: rememberMe }
+            });
+            document.getElementById("login-form").reset();
+            setAuthentication(response.user, response.csrfToken);
+            openPage("settings");
+          } catch (error) {
+            var message = error.status === 401 ? "Неверное имя пользователя или пароль" : error.message;
+            setFeedback("login-feedback", message, "error");
+          } finally {
+            setPending(button, "Вход...", false);
+          }
+        });
+
+        document.getElementById("username-form").addEventListener("submit", async function (event) {
+          event.preventDefault();
+          var username = document.getElementById("account-username").value.trim();
+          var button = document.getElementById("username-submit");
+          if (!username) {
+            setFeedback("account-feedback", "Введите новое имя пользователя.", "error");
+            return;
+          }
+
+          setFeedback("account-feedback", "", "");
+          setPending(button, "Сохранение...", true);
+          try {
+            var response = await apiRequest("/api/account/username", {
+              method: "PATCH",
+              json: { username: username }
+            });
+            setAuthentication(response.user, authentication.csrfToken);
+            setFeedback("account-feedback", "Имя пользователя обновлено.", "success");
+          } catch (error) {
+            setFeedback("account-feedback", error.message, "error");
+          } finally {
+            setPending(button, "Сохранение...", false);
+          }
+        });
+
+        document.getElementById("password-form").addEventListener("submit", async function (event) {
+          event.preventDefault();
+          var currentPassword = document.getElementById("current-password").value;
+          var newPassword = document.getElementById("new-password").value;
+          var confirmPassword = document.getElementById("confirm-password").value;
+          var button = document.getElementById("password-submit");
+          if (!currentPassword || !newPassword || !confirmPassword) {
+            setFeedback("account-feedback", "Заполните все поля пароля.", "error");
+            return;
+          }
+          if (newPassword !== confirmPassword) {
+            setFeedback("account-feedback", "Новые пароли не совпадают.", "error");
+            return;
+          }
+
+          setFeedback("account-feedback", "", "");
+          setPending(button, "Обновление...", true);
+          try {
+            await apiRequest("/api/account/password", {
+              method: "PATCH",
+              json: {
+                current_password: currentPassword,
+                new_password: newPassword,
+                confirm_password: confirmPassword
+              }
+            });
+            document.getElementById("password-form").reset();
+            setFeedback("account-feedback", "Пароль обновлён. Остальные сессии завершены.", "success");
+            loadSessions();
+          } catch (error) {
+            setFeedback("account-feedback", error.message, "error");
+          } finally {
+            setPending(button, "Обновление...", false);
+          }
+        });
+
+        document.getElementById("avatar-upload").addEventListener("change", async function (event) {
+          var file = event.target.files && event.target.files[0];
+          if (!file) return;
+          setFeedback("account-feedback", "Загрузка изображения...", "");
+          var formData = new FormData();
+          formData.append("avatar", file);
+          try {
+            var response = await apiRequest("/api/account/avatar", { method: "POST", body: formData });
+            setAuthentication(response.user, authentication.csrfToken);
+            setFeedback("account-feedback", "Аватар обновлён.", "success");
+          } catch (error) {
+            setFeedback("account-feedback", error.message, "error");
+          } finally {
+            event.target.value = "";
+          }
+        });
+
+        document.getElementById("logout-button").addEventListener("click", async function () {
+          var button = this;
+          setPending(button, "Выход...", true);
+          try {
+            await apiRequest("/api/auth/logout", { method: "POST" });
+            setAuthentication(null, "");
+            openPage("home");
+          } catch (error) {
+            if (error.status === 401) {
+              setAuthentication(null, "");
+              openPage("home");
+            } else {
+              setFeedback("account-feedback", error.message, "error");
+            }
+          } finally {
+            setPending(button, "Выход...", false);
+          }
+        });
+
+        document.addEventListener("visibilitychange", function () {
+          if (!document.hidden) sendHeartbeat();
+        });
+
+        applyAccent(savedAccent);
+        applyTheme(savedTheme);
+
+        document.querySelectorAll(".accent-choice").forEach(function (button) {
+          button.addEventListener("click", function () {
+            var color = button.dataset.accent;
+            localStorage.setItem(storageKeys.accent, color);
+            applyAccent(color);
+          });
+        });
+
+        document.getElementById("custom-accent").addEventListener("input", function (event) {
+          var color = event.target.value;
+          localStorage.setItem(storageKeys.accent, color);
+          applyAccent(color);
+        });
+
+        document.querySelectorAll(".theme-choice").forEach(function (button) {
+          button.addEventListener("click", function () {
+            var theme = button.dataset.theme;
+            localStorage.setItem(storageKeys.theme, theme);
+            applyTheme(theme);
+          });
+        });
+
+        systemTheme.addEventListener("change", function () {
+          if ((localStorage.getItem(storageKeys.theme) || "system") === "system") {
+            applyTheme("system");
+          }
+        });
+
+        document.querySelectorAll(".nav-tab").forEach(function (button) {
+          button.addEventListener("click", function () {
+            openPage(button.dataset.pageTarget);
+          });
+        });
+
+        document.querySelector(".brand").addEventListener("click", function (event) {
+          event.preventDefault();
+          openPage("home");
+        });
+
+        if (window.location.hash === "#settings") {
+          openPage("settings");
+        } else if (window.location.hash === "#login") {
+          openPage("login");
+        }
+
+        window.addEventListener("scroll", function () {
+          document.getElementById("site-header").classList.toggle("is-scrolled", window.scrollY > 4);
+        }, { passive: true });
+
+        function formatCount(value, format) {
+          if (format === "compact") {
+            return (value / 1000).toFixed(1).replace(".", ",") + "K";
+          }
+          if (format === "rating") {
+            return (value / 10).toFixed(1) + " / 5";
+          }
+          return value.toLocaleString("ru-RU");
+        }
+
+        function animateStats() {
+          if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+          document.querySelectorAll("[data-count]").forEach(function (element) {
+            var end = Number(element.dataset.count);
+            var startedAt = null;
+            var duration = 850;
+
+            function frame(timestamp) {
+              if (!startedAt) startedAt = timestamp;
+              var progress = Math.min((timestamp - startedAt) / duration, 1);
+              var easeOut = 1 - Math.pow(1 - progress, 3);
+              element.textContent = formatCount(Math.round(end * easeOut), element.dataset.format);
+              if (progress < 1) window.requestAnimationFrame(frame);
+            }
+
+            window.requestAnimationFrame(frame);
+          });
+        }
+
+        animateStats();
+        restoreAuthentication();
+      })();
+    </script>
+  </body>
+</html>
